@@ -704,15 +704,15 @@ CMD ["java", "-Dspring.profiles.active=docker-demo", "-jar", "webapp.jar"]
    mvn clean package docker:push
 ```
 
-# 🚀 Intégration des Pushes avec le Déploiement  
+# 🚀 Integrating Pushes with Deployment  
 
-Cette section explique comment **intégrer le déploiement automatique** d'une image Docker avec Maven.
+This section explains how to **integrate automatic deployment** of a Docker image with Maven.
 
 ---
 
-## ⚙️ 1. Plugin Maven pour Docker  
+## ⚙️ 1. Maven Plugin for Docker  
 
-Ajoutez le **plugin `docker-maven-plugin`** à votre `pom.xml` :  
+Add the **`docker-maven-plugin` plugin** to your `pom.xml`:
 
 ```xml
 <plugins>
@@ -722,13 +722,13 @@ Ajoutez le **plugin `docker-maven-plugin`** à votre `pom.xml` :
     <version>0.21.0</version>
 
     <configuration>
-        <!-- Décommenter si nécessaire pour spécifier l'hôte Docker -->
+        <!-- Uncomment if necessary to specify the Docker host -->
         <!-- <dockerHost>http://127.0.0.1:2375</dockerHost> -->  
         <!-- <dockerHost>unix:///var/run/docker.sock</dockerHost> -->
 
         <verbose>true</verbose>
 
-        <!-- Configuration d'authentification (préférer `settings.xml`) -->
+        <!-- Authentication configuration (prefer `settings.xml`) -->
         <!-- 
         <authConfig>
             <username>YOUR-USERNAME</username>
@@ -742,13 +742,13 @@ Ajoutez le **plugin `docker-maven-plugin`** à votre `pom.xml` :
                 <build>
                     <dockerFileDir>${project.basedir}/src/main/docker/</dockerFileDir>
 
-                    <!-- Copie le JAR avec Maven Assembly Plugin -->
+                    <!-- Copy the JAR with Maven Assembly Plugin -->
                     <assembly>
                         <descriptorRef>artifact</descriptorRef>
                     </assembly>
 
                     <tags>
-                        <!-- Modifier les tags pour conserver l'historique -->
+                        <!-- Edit tags to keep history -->
                         <tag>latest</tag>
                     </tags>
                 </build>
@@ -773,7 +773,7 @@ Ajoutez le **plugin `docker-maven-plugin`** à votre `pom.xml` :
     </executions>
 </plugin>
 
-<!-- Plugin optionnel pour désactiver Docker Maven si nécessaire -->
+<!-- Optional plugin to disable Docker Maven if needed -->
 <plugin>
    <artifactId>docker-maven-plugin</artifactId>
    <configuration>
@@ -792,7 +792,7 @@ COPY maven/fleetman-0.0.1-SNAPSHOT.jar webapp.jar
 CMD ["java", "-Dspring.profiles.active=docker-demo", "-jar", "webapp.jar"]
 ```
 
-## 🔑 3. Configuration settings.xml pour Docker Hub
+## 🔑 3. Configuring settings.xml for Docker Hub
 - Modify your settings.xml file (located in ~/.m2/ on Linux/macOS or %USERPROFILE%\.m2\ on Windows):
 ```xml
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
@@ -810,26 +810,26 @@ CMD ["java", "-Dspring.profiles.active=docker-demo", "-jar", "webapp.jar"]
 </settings>
 ```
 
-## 🏗️ 4. Commande de Build & Deploy
+## 🏗️ 4. Build & Deploy Command
 ```sh
    mvn clean deploy
 ```
 
 # 🐳 Docker Compose
 
-Docker Compose permet de **définir et exécuter plusieurs conteneurs** à l'aide d'un fichier YAML.
+Docker Compose allows you to **define and run multiple containers** using a YAML file.
 
 ---
 
-## 🔍 Vérifier la version de Docker Compose
-Avant de commencer, assurez-vous que Docker Compose est installé :
+## 🔍 Check Docker Compose version
+Before you begin, make sure you have Docker Compose installed :
 
 ```sh
 docker-compose -v
 ```
 
-## 🛠️ Gestion de l'ordre de démarrage (depends_on)
-- Avec Docker Compose, l'ordre de démarrage des services peut être contrôlé grâce à depends_on.
+## 🛠️ Managing the start order (depends_on)
+- With Docker Compose, the startup order of services can be controlled using depends_on.
 
 ## 📜 Fichier docker-compose.yaml
 
@@ -860,51 +860,53 @@ networks:
 
 ```
 
-- `image` : définit l'image Docker utilisée pour chaque service.
-- `ports` : mappe le port interne du conteneur (`8080`) au port externe (`80`).
+- `image` : defines the Docker image used for each service.
+- `ports` : maps the container's internal port (`8080`) to the external port (`80`).
 - `depends_on` : s'assure que `database` démarre avant `fleetman-webapp`.
-- `environment` : définit des variables d’environnement pour la base de données.
-- `networks` : permet aux services de communiquer sur le même réseau.
+- `environment` : ensures that `database` starts before `fleetman-webapp`.
+- `networks` : allows services to communicate on the same network.
 
-## 🔍🚀 Commandes Docker Compose
+## 🔍🚀 Docker Compose Commands
 
 ```sh
-    # Démarrer les conteneurs en arrière-plan
+    # Docker compose version
        docker-compose -v
+    # Start containers in the background
+       docker-compose up -d
        
-    #  Afficher les logs de fleetman-webapp
+    #  Show fleetman-webapp logs
        docker-compose logs -f fleetman-webapp
        
-    # Afficher les logs de la base de données
+    # View database logs
         docker-compose logs -f database
   
-    # Arrêter et supprimer tous les conteneurs définis dans docker-compose.yaml
+    # Stop and remove all containers defined in docker-compose.yaml
         docker-compose down
 ```
 
 # 🐳 Docker Swarm
 
 ---
-## 📌 Commandes de base
+## 📌 Basic commands
 
 ```sh
    docker container ls -a
    docker container prune
    docker image ls
 ```
-## 🚀 Initialiser Swarm
+## 🚀 Initialize Swarm
 
 ```sh
    docker swarm init  # Current node is now a manager
 ```
 
-## 🌍 Réseaux dans Swarm
+## 🌍 Networks in Swarm
 
 ```sh
    docker network rm fleetman-network
    docker network create --driver overlay fleetman-network
 ```
-## 📦 Création d'un service (base de données)
+## 📦 Creating a service (database)
 
 ```sh
    docker service create -d --network fleetman-network \
@@ -916,29 +918,29 @@ networks:
 ## 🖥️ Swarm TP Live (Play with Docker)
 
 ```sh
-     # Initialisation Swarm avec adresse spécifique
+     # Swarm initialization with specific address
        docker swarm init --advertise-addr 192.168.0.13
      
-     # Ajouter un nœud manager
+     # Add a manager node
        docker swarm join-token manager
        docker swarm join --token SWMTKN-1-4on9b9chmsg15xfqznz8vvxgy1hiuoyp2r44uthuznaheb0de1-591yc3crr7nh8bkwo18uulzv9 192.168.0.13:2377
        
-     # Vérification des nœuds et réseaux
+     # Checking nodes and networks
        docker node ls
        docker network create --driver overlay fleetman-network
        docker network ls
 ```
 
-## 📦 Création des services
+## 📦 Creation of services
 
 ```sh
-     # Base de données
+     # Database
        docker service create -d --network fleetman-network \
           -e MYSQL_ROOT_PASSWORD=password \
           -e MYSQL_DATABASE=fleetman \
           --name database mysql:5
 
-     # Vérification
+     # Verification
        docker service ls
        docker container ls
 
@@ -946,7 +948,7 @@ networks:
        docker service create -d --network fleetman-network -p 80:8080 \
            --name fleetman-webapp virtualpairprogrammers/fleetman-production
            
-     #  Logs des services
+     #  Service logs
         docker service logs -f database
         docker service logs -f fleetman-webapp
 ```
@@ -956,15 +958,15 @@ networks:
 ---
 ## Manager vs Worker
 
-- `Manager` : peut gérer le swarm et exécuter la commande `docker service ls`
-- `Worker` : ne peut pas lister les services (`Error: This node is not a swarm manager`)
+- `Manager` : Can manage the swarm and run the `docker service ls` command
+- `Worker` : Cannot list services (`Error: This node is not a swarm manager`)
 
 ```sh
      # List Stacks
        docker stack ls
 ```
 
-## 🚀 Déploiement d'un stack avec Docker Compose
+## 🚀 Deploying a stack with Docker Compose
 - docker-compose.yaml
 ```yaml
 version: "3"
@@ -991,7 +993,7 @@ networks:
    fleetman-network:
 ```
 
-- Commandes:
+- Command:
 
 ```sh
       docker stack deploy -c docker-compose.yaml fleetman-stack
@@ -999,20 +1001,20 @@ networks:
       docker service ps fleetman-stack_fleetman-webapp  # Historique
 ```
 
-- Vérification sur Worker:
+- Verification on Worker:
 
 ```sh
       docker container ls
       docker container kill <container_id>
 ```
 
-- Logs depuis Manager:
+- Logs from Manager:
 
 ```sh
       docker service logs -f fleetman-stack_fleetman-webapp
 ```
 
-## 📦 Service Répliqué
+## 📦 Replicated Service
 
 - docker-compose.yaml
 ```yaml
@@ -1028,7 +1030,7 @@ services:
       depends_on: 
          - database
       deploy: 
-         replicas: 2  # Nombre de réplicas
+         replicas: 2  # Number of replicas
 
    database:
       image: mysql:5
@@ -1041,7 +1043,7 @@ services:
 networks:
    fleetman-network:
 ```
-- Déploiement
+- Deployment
 
 ```sh
       docker stack deploy -c docker-compose.yaml fleetman-stack
@@ -1050,18 +1052,18 @@ networks:
 
 ## 🔄 Swarm "Routing Mesh"
 
-- Swarm publie les ports via l'option `-p`
+- Swarm publishes ports via the `-p` option
 
 ## 📊 Visualizer
 
-- Lancer un visualiseur de cluster pour voir les conteneurs en exécution :
+- Launch a cluster viewer to see the running containers:
 
 ```sh
       docker run -d -p 5000:8080 -v /var/run/docker.sock:/var/run/docker.sock dockersamples/visualizer
 ```
 
 ## 🔄 Rolling Updates
-- Permet des mises à jour progressives des conteneurs.
+- Allows for rolling container updates.
 
 ```yaml
 version: "3"
@@ -1078,8 +1080,8 @@ services:
       deploy: 
          replicas: 2
          update_config:
-            parallelism: 1  # Nombre de conteneurs mis à jour en parallèle
-            delay: 120s      # Délai entre chaque mise à jour
+            parallelism: 1   # Number of containers updated in parallel
+            delay: 120s      # Delay between each update
 
    database:
       image: mysql:5
@@ -1094,10 +1096,10 @@ networks:
 
 ```
 
-## ⚡ Déploiement
+## ⚡ Deployment
 
 ```sh
       docker stack deploy -c docker-compose.yaml fleetman-stack
 ```
 
-- `delay` : Temps d'attente entre la mise à jour d'un groupe de conteneurs.
+- `delay` : Wait time between updating a container group.
